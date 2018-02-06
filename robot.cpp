@@ -25,6 +25,7 @@ public:
 		frontRightSpeedController = new TalonSRX(1);
 		backLeftSpeedController = new TalonSRX(2);
 		frontLeftSpeedController = new TalonSRX(3);
+		frontLeftSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 
 	}
 	/*
@@ -42,7 +43,6 @@ public:
 	 * well.
 	 */
 	void AutonomousInit() override {
-		frontLeftSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 		int pulseWidth = frontLeftSpeedController->GetSensorCollection().GetPulseWidthVelocity();
 
 	}
@@ -76,6 +76,3 @@ private:
 	const std::string kAutoNameCustom = "My Auto";
 	std::string m_autoSelected;
 };
-
-START_ROBOT_CLASS(Robot)
-
