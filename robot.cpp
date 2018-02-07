@@ -13,7 +13,7 @@
 #include <LiveWindow/LiveWindow.h>
 #include <SmartDashboard/SendableChooser.h>
 #include <SmartDashboard/SmartDashboard.h>
-
+using namespace std;
 class Robot : public frc::IterativeRobot {
 public:
 
@@ -57,18 +57,17 @@ public:
 	void TeleopPeriodic() {
 		double leftWheels = myStick->GetRawAxis(5);
 		double rightWheels = myStick->GetRawAxis(1);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 	}
 
-	void TestPeriodic() {}
+	void TestPeriodic() {
+
+	}
 
 private:
-	frc::LiveWindow& m_lw = *LiveWindow::GetInstance();
-	frc::SendableChooser<std::string> m_chooser;
-	const std::string kAutoNameDefault = "Default";
-	const std::string kAutoNameCustom = "My Auto";
-	std::string m_autoSelected;
+
 };
+START_ROBOT_CLASS(Robot)
