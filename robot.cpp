@@ -55,8 +55,8 @@ public:
 	void TeleopInit() {}
 
 	void TeleopPeriodic() {
-		double leftWheels = myStick->GetRawAxis(1);
-		double rightWheels = myStick->GetRawAxis(5);
+		double leftWheels = myStick->GetRawAxis(5);
+		double rightWheels = myStick->GetRawAxis(1);
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
 		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
