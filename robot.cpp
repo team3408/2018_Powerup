@@ -16,15 +16,16 @@
 
 class Robot : public frc::IterativeRobot {
 public:
+
 	TalonSRX *frontLeftSpeedController, *backLeftSpeedController, *frontRightSpeedController, *backRightSpeedController;
 	Joystick *myStick;
 
 	void RobotInit() {
 		myStick = new Joystick(0);
-		frontLeftSpeedController = new TalonSRX(0);
+		frontLeftSpeedController = new TalonSRX(2);
 		frontRightSpeedController = new TalonSRX(1);
-		backLeftSpeedController = new TalonSRX(2);
-		frontLeftSpeedController = new TalonSRX(3);
+		backLeftSpeedController = new TalonSRX(0);
+		backRightSpeedController = new TalonSRX(3);
 		frontLeftSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 
 	}
@@ -48,11 +49,7 @@ public:
 	}
 
 	void AutonomousPeriodic() {
-		if (m_autoSelected == kAutoNameCustom) {
-			// Custom Auto goes here
-		} else {
-			// Default Auto goes here
-		}
+
 	}
 
 	void TeleopInit() {}
@@ -64,7 +61,6 @@ public:
 		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
-
 	}
 
 	void TestPeriodic() {}
