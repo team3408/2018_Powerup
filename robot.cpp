@@ -18,7 +18,7 @@
 class Robot : public frc::IterativeRobot {
 public:
 
-	TalonSRX *frontLeftSpeedController, *backLeftSpeedController, *frontRightSpeedController, *backRightSpeedController;
+	TalonSRX *frontLeftSpeedController, *backLeftSpeedController, *frontRightSpeedController, *backRightSpeedController, *leftIntakeSpeedController, *rightIntakeSpeedController, *centerToteTunnel, *leftToteTunnel, *rightToteTunnel;
 	Joystick *myStick;
 	SmartDashboard *myData;
 	DoubleSolenoid *gearBoxShifter;
@@ -33,6 +33,11 @@ public:
 		frontRightSpeedController = new TalonSRX(1);
 		backLeftSpeedController = new TalonSRX(0);
 		backRightSpeedController = new TalonSRX(3);
+		leftIntakeSpeedController = new TalonSRX(4);
+		rightIntakeSpeedController = new TalonSRX(5);
+		centerToteTunnel = new TalonSRX(6);
+		rightToteTunnel = new TalonSRX(7);
+		leftToteTunnel = new TalonSRX(8);
 		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 		gearBoxShifter = new DoubleSolenoid(1,2);
 	}
@@ -44,6 +49,15 @@ public:
 		}
 	}
 
+	void mechIntakeOuttake() {
+		double mechValue = myStick->GetRawAxis(3);
+		leftIntakeSpeedController->Set(ControlMode::PercentOutput, mechValue);
+		rightIntakeSpeedController->Set(ControlMode::PercentOutput, mechValue);
+		centerToteTunnel->Set(ControlMode::PercentOutput, mechValue);
+		leftToteTunnel->Set(ControlMode::PercentOutput, mechValue);
+		rightToteTunnel->Set(ControlMode::PercentOutput, mechValue);
+	}
+	
 	void speedMode() {
 		solenoidBackward = myStick->GetRawButton(6); //RB
 		if (solenoidBackward) {
@@ -56,8 +70,15 @@ public:
 		double units = (distance/(6*M_PI))*4096;
 		return units;
 	}
-
-	void moveForward()
+	void moveRobotTeleop() {
+		double leftWheels = myStick->GetRawAxis(5);
+		double rightWheels = myStick->GetRawAxis(1);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
+		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
+	}
+	void moveAutoForward()
 	{
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, 0.5);
 		backLeftSpeedController->Set(ControlMode::PercentOutput, 0.5);
@@ -72,7 +93,7 @@ public:
 		myData->PutNumber("Pulse Width Counter", PulseWidth);
 		while (PulseWidth < unitsToSwitch)
 		{
-			moveForward();
+			moveAutoForward();
 		}
 		//(robot has stopped) shoot cube
 	}
@@ -82,12 +103,9 @@ public:
 	void TeleopPeriodic() {
 		torqueMode();
 		speedMode();
-		double leftWheels = myStick->GetRawAxis(5);
-		double rightWheels = myStick->GetRawAxis(1);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
-		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
+		mechIntakeOuttake();
+		moveRobotTeleop();
+		
 
 	}
 
