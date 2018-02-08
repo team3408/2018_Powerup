@@ -80,9 +80,8 @@ public:
 	void TeleopInit() {}
 
 	void TeleopPeriodic() {
-		if (speedMode) {
-			shiftGearBox();
-		}
+		torqueMode();
+		speedMode();
 		double leftWheels = myStick->GetRawAxis(5);
 		double rightWheels = myStick->GetRawAxis(1);
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
