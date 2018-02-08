@@ -20,16 +20,17 @@ public:
 	TalonSRX *frontLeftSpeedController, *backLeftSpeedController, *frontRightSpeedController, *backRightSpeedController;
 	Joystick *myStick;
 	SmartDashboard *myData;
-	double unitsToSwitch = 30421.93686;
-	double unitAutoTracker = calculateUnitsAuto(140);
-	
-	
+	double unitsToSwitch = calculateUnitsAuto(140);
+	double PulseWidth = 0;
+
+
+
 	double calculateUnitsAuto(int distance)
 	{
 		double units = (distance/(6*M_PI))*4096;
 		return units;
 	}
-	
+
 	void moveForward()
 	{
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, 0.5);
@@ -37,7 +38,7 @@ public:
 		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
 		backRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
 	}
-	
+
 	void RobotInit() {
 		myStick = new Joystick(0);
 		frontLeftSpeedController = new TalonSRX(2);
@@ -46,32 +47,30 @@ public:
 		backRightSpeedController = new TalonSRX(3);
 		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 	}
-	
+
 	void AutonomousInit() override {
-		
-		
 	}
 	void AutonomousPeriodic() {
-		while (unitAutoTracker < unitsToSwitch) 
+		PulseWidth = frontRightSpeedController->GetSensorCollection().GetPulseWidthVelocity();
+		myData->PutNumber("Pulse Width Counter", PulseWidth);
+		while (PulseWidth < unitsToSwitch)
 		{
 			moveForward();
-		}		
+		}
 		//(robot has stopped) shoot cube
-		
 	}
 
 	void TeleopInit() {}
 
 	void TeleopPeriodic() {
-		double PulseWidth = frontRightSpeedController->GetSensorCollection().GetPulseWidthVelocity();
-		myData->PutNumber("Pulse Width", PulseWidth);
+
 		double leftWheels = myStick->GetRawAxis(5);
 		double rightWheels = myStick->GetRawAxis(1);
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
 		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
-		
+
 	}
 
 	void TestPeriodic() {}
