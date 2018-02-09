@@ -15,6 +15,8 @@
 #include <SmartDashboard/SmartDashboard.h>
 #include <math.h>
 
+using namespace std;
+
 class Robot : public frc::IterativeRobot {
 public:
 
@@ -22,10 +24,12 @@ public:
 	Joystick *myStick;
 	SmartDashboard *myData;
 	DoubleSolenoid *gearBoxShifter;
-	double unitsToSwitch = calculateUnitsAuto(140);
+	double unitsToSwitch = calculateUnitsAuto(120);
 	double PulseWidth = 0;
 	bool solenoidForward;
 	bool solenoidBackward;
+	DoubleSolenoid *intake1;
+	DoubleSolenoid *intake2;
 
 	void RobotInit() {
 		myStick = new Joystick(0);
@@ -40,6 +44,10 @@ public:
 		leftToteTunnel = new TalonSRX(8);
 		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 		gearBoxShifter = new DoubleSolenoid(1,2);
+		intake1 = new DoubleSolenoid(3,4);
+		intake2 = new DoubleSolenoid(5,6);
+		intake1 -> Set(DoubleSolenoid::Value::kReverse);
+		intake2 -> Set(DoubleSolenoid::Value::kReverse);
 	}
 
 	void torqueMode() {
@@ -57,7 +65,7 @@ public:
 		leftToteTunnel->Set(ControlMode::PercentOutput, mechValue);
 		rightToteTunnel->Set(ControlMode::PercentOutput, mechValue);
 	}
-	
+
 	void speedMode() {
 		solenoidBackward = myStick->GetRawButton(6); //RB
 		if (solenoidBackward) {
@@ -86,16 +94,62 @@ public:
 		backRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
 	}
 
-	void AutonomousInit() override {
+	void shootCubeAuto() {
+		centerToteTunnel->Set(ControlMode::PercentOutput, 0.75);
+		rightToteTunnel->Set(ControlMode::PercentOutput, 0.75);
+		leftToteTunnel->Set(ControlMode::PercentOutput, 0.75);
 	}
+
+	void leftSideAuto() {
+		string gameData;
+		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+		if(gameData.length > 0)
+		{
+		  if(gameData[0] == 'L') 		///////// LEFT SIDE AUTONOMOUS CODE (IF WE START ON THE LEFT) /////////
+		  {
+			  while (PulseWidth < unitsToSwitch)
+				{
+					moveAutoForward();
+				}
+			  shootCubeAuto();
+			  }
+		  else
+		  {
+			  //Go around the switch and shoot the cube
+		  }
+		}
+	}
+
+	void rightSideAuto() {
+		string gameData;
+		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+		if(gameData.length > 0)
+		{
+		  if(gameData[0] == 'R') 		//////// Right SIDE AUTONOMOUS CODE (IF WE START ON THE Right)
+		  {
+			  while (PulseWidth < unitsToSwitch)
+				{
+					moveAutoForward();
+				}
+			  shootCubeAuto();
+		  }
+		  else
+		  {
+			  //Go around the switch and shoot the cube
+		  }
+		}
+	}
+
+	void AutonomousInit() override {
+		intake1 -> Set(DoubleSolenoid::Value::kForward);
+		intake2 -> Set(DoubleSolenoid::Value::kForward);
+		leftSideAuto();
+		rightSideAuto();
+	}
+
 	void AutonomousPeriodic() {
 		PulseWidth = frontRightSpeedController->GetSensorCollection().GetPulseWidthVelocity();
 		myData->PutNumber("Pulse Width Counter", PulseWidth);
-		while (PulseWidth < unitsToSwitch)
-		{
-			moveAutoForward();
-		}
-		//(robot has stopped) shoot cube
 	}
 
 	void TeleopInit() {}
@@ -105,7 +159,7 @@ public:
 		speedMode();
 		mechIntakeOuttake();
 		moveRobotTeleop();
-		
+
 
 	}
 
