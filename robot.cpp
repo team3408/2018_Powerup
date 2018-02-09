@@ -25,11 +25,13 @@ public:
 	SmartDashboard *myData;
 	DoubleSolenoid *gearBoxShifter;
 	double unitsToSwitch = calculateUnitsAuto(120);
-	double PulseWidth = 0;
+	double PulseWidth = frontRightSpeedController->GetSensorCollection().GetPulseWidthVelocity();
 	bool solenoidForward;
 	bool solenoidBackward;
 	DoubleSolenoid *intake1;
 	DoubleSolenoid *intake2;
+
+
 
 	void RobotInit() {
 		myStick = new Joystick(0);
@@ -42,12 +44,16 @@ public:
 		centerToteTunnel = new TalonSRX(6);
 		rightToteTunnel = new TalonSRX(7);
 		leftToteTunnel = new TalonSRX(8);
-		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
+		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
 		gearBoxShifter = new DoubleSolenoid(1,2);
 		intake1 = new DoubleSolenoid(3,4);
 		intake2 = new DoubleSolenoid(5,6);
 		intake1 -> Set(DoubleSolenoid::Value::kReverse);
 		intake2 -> Set(DoubleSolenoid::Value::kReverse);
+	}
+
+	void resetEncoder() {
+		PulseWidth = frontRightSpeedController->GetSensorCollection().SetQuadraturePosition(0,10);
 	}
 
 	void torqueMode() {
@@ -119,16 +125,17 @@ public:
 	}
 
 	void rightIfOtherTeamNoAuto() {
+		resetEncoder();
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the left
-		//Reset PulseWidth
+		turnNinetyLeft();
+		resetEncoder();
 		while (PulseWidth < calculateUnitsAuto(120)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the right
-		//Reset PulseWidth
+		turnNinetyRight();
+		resetEncoder();
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
@@ -139,13 +146,13 @@ public:
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the right
-		//Reset PulseWidth
+		turnNinetyRight();
+		resetEncoder();
 		while (PulseWidth < calculateUnitsAuto(120)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the left
-		//Reset PulseWidth
+		turnNinetyLeft();
+		resetEncoder();
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
@@ -170,25 +177,26 @@ public:
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 left
-			 PulseWidth = 0;
+			 turnNinetyLeft();
+			 resetEncoder();
 			 while (PulseWidth < calculateUnitsAuto(65))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 right
-			 PulseWidth=0;
+			 turnNinetyRight();
+			 resetEncoder();
 			 while (PulseWidth <calculateUnitsAuto(110))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 right
-			 PulseWidth = 0;
+			 turnNinetyRight();
+			 resetEncoder();
 			 while (PulseWidth<calculateUnitsAuto(264))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 right
+			 turnNinetyRight();
+			 resetEncoder();
 			 shootCubeAuto();
 		  }
 		}
@@ -213,25 +221,26 @@ public:
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 right
-			 PulseWidth = 0;
+			 turnNinetyRight();
+			 resetEncoder();
 			 while (PulseWidth < calculateUnitsAuto(65))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 left
-			 PulseWidth=0;
+			 turnNinetyLeft();
+			 resetEncoder();
 			 while (PulseWidth <calculateUnitsAuto(110))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 left
-			 PulseWidth = 0;
+			 turnNinetyLeft();
+			 resetEncoder();
 			 while (PulseWidth<calculateUnitsAuto(264))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 left
+			 turnNinetyLeft();
+			 resetEncoder();
 			 shootCubeAuto();
 		  }
 		}
@@ -240,7 +249,7 @@ public:
 	void AutonomousInit() override {
 		intake1 -> Set(DoubleSolenoid::Value::kForward);
 		intake2 -> Set(DoubleSolenoid::Value::kForward);
-		
+
 	}
 
 	void AutonomousPeriodic() {
