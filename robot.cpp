@@ -72,7 +72,7 @@ public:
 			gearBoxShifter->Set(DoubleSolenoid::Value::kReverse);
 		}
 	}
-	
+
 	double calculateUnitsAuto(int distance)
 	{
 		double units = (distance/(6*M_PI))*4096;
@@ -99,7 +99,25 @@ public:
 		rightToteTunnel->Set(ControlMode::PercentOutput, 0.75);
 		leftToteTunnel->Set(ControlMode::PercentOutput, 0.75);
 	}
-	
+	void turnNinetyLeft() //right wheels go forward, left wheels go back
+	{
+		//while gyro != -90
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -1);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -1);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, 1);
+		backRightSpeedController->Set(ControlMode::PercentOutput, 1);
+		//Wait 0.3, Reset Gyro
+	}
+	void turnNinetyRight() //right wheels go forward, left wheels go back
+	{
+		//while gyro != 90
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -1);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -1);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, 1);
+		backRightSpeedController->Set(ControlMode::PercentOutput, 1);
+		//Wait 0.3, Reset Gyro
+	}
+
 	void rightIfOtherTeamNoAuto() {
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
@@ -116,7 +134,7 @@ public:
 		}
 		shootCubeAuto();
 	}
-	
+
 	void leftIfOtherTeamNoAuto() {
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
@@ -133,7 +151,6 @@ public:
 		}
 		shootCubeAuto();
 	}
-
 	void leftSideIfOtherTeamAuto() {
 		string gameData;
 		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
@@ -145,10 +162,34 @@ public:
 				{
 					moveAutoForward();
 				}
+			  shootCubeAuto();
 			  }
-		  else
+		  else //LIGHT IS ON THE RIGHT WHILE WE ARE ON THE LEFT
 		  {
-			  //Go around the switch and shoot the cube
+			 while (PulseWidth < calculateUnitsAuto(120))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 left
+			 PulseWidth = 0;
+			 while (PulseWidth < calculateUnitsAuto(65))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 right
+			 PulseWidth=0;
+			 while (PulseWidth <calculateUnitsAuto(110))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 right
+			 PulseWidth = 0;
+			 while (PulseWidth<calculateUnitsAuto(264))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 right
+			 shootCubeAuto();
 		  }
 		}
 	}
@@ -166,9 +207,32 @@ public:
 				}
 			  shootCubeAuto();
 		  }
-		  else
+		  else //LIGHT IS ON THE LEFT WHILE WE ARE ON THE RIGHT
 		  {
-			 
+			 while (PulseWidth < calculateUnitsAuto(120))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 right
+			 PulseWidth = 0;
+			 while (PulseWidth < calculateUnitsAuto(65))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 left
+			 PulseWidth=0;
+			 while (PulseWidth <calculateUnitsAuto(110))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 left
+			 PulseWidth = 0;
+			 while (PulseWidth<calculateUnitsAuto(264))
+			 {
+				 moveAutoForward();
+			 }
+			 //Turn 90 left
+			 shootCubeAuto();
 		  }
 		}
 	}
@@ -176,8 +240,7 @@ public:
 	void AutonomousInit() override {
 		intake1 -> Set(DoubleSolenoid::Value::kForward);
 		intake2 -> Set(DoubleSolenoid::Value::kForward);
-		leftSideIfOtherTeamAuto();
-		rightSideIfOtherTeamAuto();
+		
 	}
 
 	void AutonomousPeriodic() {
@@ -192,8 +255,6 @@ public:
 		speedMode();
 		mechIntakeOuttake();
 		moveRobotTeleop();
-
-
 	}
 
 	void TestPeriodic() {}
