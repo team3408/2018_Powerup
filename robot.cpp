@@ -72,7 +72,7 @@ public:
 			gearBoxShifter->Set(DoubleSolenoid::Value::kReverse);
 		}
 	}
-
+	
 	double calculateUnitsAuto(int distance)
 	{
 		double units = (distance/(6*M_PI))*4096;
@@ -99,8 +99,42 @@ public:
 		rightToteTunnel->Set(ControlMode::PercentOutput, 0.75);
 		leftToteTunnel->Set(ControlMode::PercentOutput, 0.75);
 	}
+	
+	void rightIfOtherTeamNoAuto() {
+		while (PulseWidth < calculateUnitsAuto(60)) {
+			moveAutoForward();
+		}
+		//Turn 90 degrees to the left
+		//Reset PulseWidth
+		while (PulseWidth < calculateUnitsAuto(120)) {
+			moveAutoForward();
+		}
+		//Turn 90 degrees to the right
+		//Reset PulseWidth
+		while (PulseWidth < calculateUnitsAuto(60)) {
+			moveAutoForward();
+		}
+		shootCubeAuto();
+	}
+	
+	void leftIfOtherTeamNoAuto() {
+		while (PulseWidth < calculateUnitsAuto(60)) {
+			moveAutoForward();
+		}
+		//Turn 90 degrees to the right
+		//Reset PulseWidth
+		while (PulseWidth < calculateUnitsAuto(120)) {
+			moveAutoForward();
+		}
+		//Turn 90 degrees to the left
+		//Reset PulseWidth
+		while (PulseWidth < calculateUnitsAuto(60)) {
+			moveAutoForward();
+		}
+		shootCubeAuto();
+	}
 
-	void leftSideAuto() {
+	void leftSideIfOtherTeamAuto() {
 		string gameData;
 		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 		if(gameData.length > 0)
@@ -111,7 +145,6 @@ public:
 				{
 					moveAutoForward();
 				}
-			  shootCubeAuto();
 			  }
 		  else
 		  {
@@ -120,7 +153,7 @@ public:
 		}
 	}
 
-	void rightSideAuto() {
+	void rightSideIfOtherTeamAuto() {
 		string gameData;
 		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 		if(gameData.length > 0)
@@ -135,7 +168,7 @@ public:
 		  }
 		  else
 		  {
-			  //Go around the switch and shoot the cube
+			 
 		  }
 		}
 	}
@@ -143,8 +176,8 @@ public:
 	void AutonomousInit() override {
 		intake1 -> Set(DoubleSolenoid::Value::kForward);
 		intake2 -> Set(DoubleSolenoid::Value::kForward);
-		leftSideAuto();
-		rightSideAuto();
+		leftSideIfOtherTeamAuto();
+		rightSideIfOtherTeamAuto();
 	}
 
 	void AutonomousPeriodic() {
