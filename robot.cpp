@@ -30,8 +30,7 @@ public:
 	bool solenoidBackward;
 	DoubleSolenoid *intake1;
 	DoubleSolenoid *intake2;
-
-
+	AnalogGyro *gyro;
 
 	void RobotInit() {
 		myStick = new Joystick(0);
@@ -50,6 +49,7 @@ public:
 		intake2 = new DoubleSolenoid(5,6);
 		intake1 -> Set(DoubleSolenoid::Value::kReverse);
 		intake2 -> Set(DoubleSolenoid::Value::kReverse);
+		gyro = new AnalogGyro(7);
 	}
 
 	void resetEncoder() {
@@ -123,7 +123,7 @@ public:
 		backRightSpeedController->Set(ControlMode::PercentOutput, 1);
 		//Wait 0.3, Reset Gyro
 	}
-
+/*
 	void rightIfOtherTeamNoAuto() {
 		resetEncoder();
 		while (PulseWidth < calculateUnitsAuto(60)) {
@@ -161,7 +161,7 @@ public:
 	void leftSideIfOtherTeamAuto() {
 		string gameData;
 		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
-		if(gameData.length > 0)
+		if(gameData. > 0)
 		{
 		  if(gameData[0] == 'L') 		///////// LEFT SIDE AUTONOMOUS CODE (IF WE START ON THE LEFT) /////////
 		  {
@@ -245,7 +245,7 @@ public:
 		  }
 		}
 	}
-
+*/
 	void AutonomousInit() override {
 		intake1 -> Set(DoubleSolenoid::Value::kForward);
 		intake2 -> Set(DoubleSolenoid::Value::kForward);
@@ -254,7 +254,9 @@ public:
 
 	void AutonomousPeriodic() {
 		PulseWidth = frontRightSpeedController->GetSensorCollection().GetPulseWidthVelocity();
+		double gyroCount = gyro -> GetAngle();
 		myData->PutNumber("Pulse Width Counter", PulseWidth);
+		myData->PutNumber("Gyro Counter", PulseWidth);
 	}
 
 	void TeleopInit() {}
