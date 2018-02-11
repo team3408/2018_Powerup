@@ -31,6 +31,8 @@ public:
 	DoubleSolenoid *intake1;
 	DoubleSolenoid *intake2;
 	string gameData;
+	PigeonIMU *pigeon;
+	double gyroValues[3];
 	void RobotInit() {
 		myStick = new Joystick(0);
 		frontLeftSpeedController = new TalonSRX(2);
@@ -43,11 +45,12 @@ public:
 		rightToteTunnel = new TalonSRX(7);
 		leftToteTunnel = new TalonSRX(8);
 		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
-		gearBoxShifter = new DoubleSolenoid(1,2);
-		intake1 = new DoubleSolenoid(3,4);
-		intake2 = new DoubleSolenoid(5,6);
-		intake1 -> Set(DoubleSolenoid::Value::kReverse);
-		intake2 -> Set(DoubleSolenoid::Value::kReverse);
+		gearBoxShifter = new DoubleSolenoid(0,1);
+		pigeon = new PigeonIMU(frontRightSpeedController);
+		//intake1 = new DoubleSolenoid(3,4);
+		//intake2 = new DoubleSolenoid(5,6);
+	//	intake1 -> Set(DoubleSolenoid::Value::kReverse);
+	//	intake2 -> Set(DoubleSolenoid::Value::kReverse);
 	}
 
 	void torqueMode() {
@@ -81,24 +84,25 @@ public:
 	void moveRobotTeleop() {
 		double leftWheels = myStick->GetRawAxis(5);
 		double rightWheels = myStick->GetRawAxis(1);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 	}
 	void moveAutoForward()
 	{
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, 0.5);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, 0.5);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
-		backRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -0.1);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -0.1);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.1);
+		backRightSpeedController->Set(ControlMode::PercentOutput, 0.1);
 	}
 	void colorIsInFrontOfUsAuto() {
 		  while (PulseWidth < unitsToSwitch)
 			{
 				moveAutoForward();
 			}
-		  shootCubeAuto();
+		  shootCubeAuto();\
+
 	 }
 	void shootCubeAuto() {
 		centerToteTunnel->Set(ControlMode::PercentOutput, 0.75);
@@ -216,7 +220,7 @@ public:
 
 	void AutonomousInit() override {
 		gameData = DriverStation::GetInstance().GetGameSpecificMessage();
-		if(gameData.length() > 0)
+		if(gameData.length() > 2)
 		{
 			if(gameData[0] == 'L') //switch the L to R if we start on the right
 			{
@@ -229,8 +233,6 @@ public:
 		//intake1 -> Set(DoubleSolenoid::Value::kForward);
 		//intake2 -> Set(DoubleSolenoid::Value::kForward);
 		}
-
-
 	}
 
 	void AutonomousPeriodic() {
@@ -238,13 +240,19 @@ public:
 		myData->PutNumber("Pulse Width Counter", PulseWidth);
 	}
 
-	void TeleopInit() {}
+	void TeleopInit() {
+		pigeon->SetAccumZAngle(0,10);
+
+	}
 
 	void TeleopPeriodic() {
 		torqueMode();
 		speedMode();
 		mechIntakeOuttake();
 		moveRobotTeleop();
+		pigeon->GetAccumGyro(gyroValues);
+		myData->PutNumber("Gyro z", gyroValues[2]);
+
 	}
 
 	void TestPeriodic() {}
