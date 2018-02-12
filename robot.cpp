@@ -101,7 +101,7 @@ public:
 			{
 				moveAutoForward();
 			}
-		  shootCubeAuto();\
+		  shootCubeAuto();
 
 	 }
 	void shootCubeAuto() {
@@ -111,21 +111,26 @@ public:
 	}
 	void turnNinetyLeft() //right wheels go forward, left wheels go back
 	{
-		//while gyro != -90
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, -1);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, -1);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, 1);
-		backRightSpeedController->Set(ControlMode::PercentOutput, 1);
-		//Wait 0.3, Reset Gyro
+		while(gyroValues[2] != -90) {
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, 1);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, 1);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, -1);
+		backRightSpeedController->Set(ControlMode::PercentOutput, -1);
+		}
+		Wait(1);
+		pigeon->SetAccumZAngle(0,10);
+
 	}
 	void turnNinetyRight() //right wheels go forward, left wheels go back
 	{
-		//while gyro != 90
+		while(gyroValues[2] != 90) {
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, -1);
 		backLeftSpeedController->Set(ControlMode::PercentOutput, -1);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, 1);
 		backRightSpeedController->Set(ControlMode::PercentOutput, 1);
-		//Wait 0.3, Reset Gyro
+		}
+		Wait(1);
+		pigeon->SetAccumZAngle(0,10);
 	}
 
 	void rightIfOtherTeamNoAuto() { //not going straight, starting on the right going to the left
