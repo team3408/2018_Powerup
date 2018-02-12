@@ -25,13 +25,14 @@ public:
 	SmartDashboard *myData;
 	DoubleSolenoid *gearBoxShifter;
 	double unitsToSwitch = calculateUnitsAuto(120);
-	double PulseWidth = frontRightSpeedController->GetSensorCollection().GetPulseWidthVelocity();
+	double PulseWidth = 0;
 	bool solenoidForward;
 	bool solenoidBackward;
 	DoubleSolenoid *intake1;
 	DoubleSolenoid *intake2;
-	AnalogGyro *gyro;
-
+	string gameData;
+	PigeonIMU *pigeon;
+	double gyroValues[3];
 	void RobotInit() {
 		myStick = new Joystick(0);
 		frontLeftSpeedController = new TalonSRX(2);
@@ -43,17 +44,13 @@ public:
 		centerToteTunnel = new TalonSRX(6);
 		rightToteTunnel = new TalonSRX(7);
 		leftToteTunnel = new TalonSRX(8);
-		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
-		gearBoxShifter = new DoubleSolenoid(1,2);
-		intake1 = new DoubleSolenoid(3,4);
-		intake2 = new DoubleSolenoid(5,6);
-		intake1 -> Set(DoubleSolenoid::Value::kReverse);
-		intake2 -> Set(DoubleSolenoid::Value::kReverse);
-		gyro = new AnalogGyro(7);
-	}
-
-	void resetEncoder() {
-		PulseWidth = frontRightSpeedController->GetSensorCollection().SetQuadraturePosition(0,10);
+		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
+		gearBoxShifter = new DoubleSolenoid(0,1);
+		pigeon = new PigeonIMU(frontRightSpeedController);
+		//intake1 = new DoubleSolenoid(3,4);
+		//intake2 = new DoubleSolenoid(5,6);
+	//	intake1 -> Set(DoubleSolenoid::Value::kReverse);
+	//	intake2 -> Set(DoubleSolenoid::Value::kReverse);
 	}
 
 	void torqueMode() {
@@ -87,19 +84,26 @@ public:
 	void moveRobotTeleop() {
 		double leftWheels = myStick->GetRawAxis(5);
 		double rightWheels = myStick->GetRawAxis(1);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
 	}
 	void moveAutoForward()
 	{
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, 0.5);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, 0.5);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
-		backRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -0.1);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -0.1);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.1);
+		backRightSpeedController->Set(ControlMode::PercentOutput, 0.1);
 	}
+	void colorIsInFrontOfUsAuto() {
+		  while (PulseWidth < unitsToSwitch)
+			{
+				moveAutoForward();
+			}
+		  shootCubeAuto();\
 
+	 }
 	void shootCubeAuto() {
 		centerToteTunnel->Set(ControlMode::PercentOutput, 0.75);
 		rightToteTunnel->Set(ControlMode::PercentOutput, 0.75);
@@ -123,149 +127,132 @@ public:
 		backRightSpeedController->Set(ControlMode::PercentOutput, 1);
 		//Wait 0.3, Reset Gyro
 	}
-/*
-	void rightIfOtherTeamNoAuto() {
-		resetEncoder();
+
+	void rightIfOtherTeamNoAuto() { //not going straight, starting on the right going to the left
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
-		turnNinetyLeft();
-		resetEncoder();
+		//Turn 90 degrees to the left
+		//Reset PulseWidth
 		while (PulseWidth < calculateUnitsAuto(120)) {
 			moveAutoForward();
 		}
-		turnNinetyRight();
-		resetEncoder();
+		//Turn 90 degrees to the right
+		//Reset PulseWidth
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
 		shootCubeAuto();
 	}
 
-	void leftIfOtherTeamNoAuto() {
+	void leftIfOtherTeamNoAuto() { //not going straight, starting on the left going to the right
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
-		turnNinetyRight();
-		resetEncoder();
+		//Turn 90 degrees to the right
+		//Reset PulseWidth
 		while (PulseWidth < calculateUnitsAuto(120)) {
 			moveAutoForward();
 		}
-		turnNinetyLeft();
-		resetEncoder();
+		//Turn 90 degrees to the left
+		//Reset PulseWidth
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
 		shootCubeAuto();
 	}
-	void leftSideIfOtherTeamAuto() {
-		string gameData;
-		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
-		if(gameData. > 0)
-		{
-		  if(gameData[0] == 'L') 		///////// LEFT SIDE AUTONOMOUS CODE (IF WE START ON THE LEFT) /////////
-		  {
-			  while (PulseWidth < unitsToSwitch)
-				{
-					moveAutoForward();
-				}
-			  shootCubeAuto();
-			  }
-		  else //LIGHT IS ON THE RIGHT WHILE WE ARE ON THE LEFT
-		  {
-			 while (PulseWidth < calculateUnitsAuto(120))
-			 {
-				 moveAutoForward();
-			 }
-			 turnNinetyLeft();
-			 resetEncoder();
-			 while (PulseWidth < calculateUnitsAuto(65))
-			 {
-				 moveAutoForward();
-			 }
-			 turnNinetyRight();
-			 resetEncoder();
-			 while (PulseWidth <calculateUnitsAuto(110))
-			 {
-				 moveAutoForward();
-			 }
-			 turnNinetyRight();
-			 resetEncoder();
-			 while (PulseWidth<calculateUnitsAuto(264))
-			 {
-				 moveAutoForward();
-			 }
-			 turnNinetyRight();
-			 resetEncoder();
-			 shootCubeAuto();
-		  }
-		}
-	}
 
-	void rightSideIfOtherTeamAuto() {
-		string gameData;
-		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
-		if(gameData.length > 0)
-		{
-		  if(gameData[0] == 'R') 		//////// Right SIDE AUTONOMOUS CODE (IF WE START ON THE Right)
-		  {
-			  while (PulseWidth < unitsToSwitch)
-				{
-					moveAutoForward();
-				}
-			  shootCubeAuto();
-		  }
-		  else //LIGHT IS ON THE LEFT WHILE WE ARE ON THE RIGHT
-		  {
+	 void leftOtherTeamHasAuto() {	 //not going straight, starting on the left and going around the switch to the right
+		 while (PulseWidth < calculateUnitsAuto(120))
+		 {
+			 moveAutoForward();
+		 }
+		 //Turn 90 left
+		 PulseWidth = 0;
+		 while (PulseWidth < calculateUnitsAuto(65))
+		 {
+			 moveAutoForward();
+		 }
+		 //Turn 90 right
+		 PulseWidth=0;
+		 while (PulseWidth <calculateUnitsAuto(110))
+		 {
+			 moveAutoForward();
+		 }
+		 //Turn 90 right
+		 PulseWidth = 0;
+		 while (PulseWidth<calculateUnitsAuto(264))
+		 {
+			 moveAutoForward();
+		 }
+		 //Turn 90 right
+		 shootCubeAuto();
+ 	 }
+
+
+
+	void rightSideIfOtherTeamAuto() { //not going straight, starting on the right and going around the switch to the left
 			 while (PulseWidth < calculateUnitsAuto(120))
 			 {
 				 moveAutoForward();
 			 }
-			 turnNinetyRight();
-			 resetEncoder();
+			 //Turn 90 right
+			 PulseWidth = 0;
 			 while (PulseWidth < calculateUnitsAuto(65))
 			 {
 				 moveAutoForward();
 			 }
-			 turnNinetyLeft();
-			 resetEncoder();
+			 //Turn 90 left
+			 PulseWidth=0;
 			 while (PulseWidth <calculateUnitsAuto(110))
 			 {
 				 moveAutoForward();
 			 }
-			 turnNinetyLeft();
-			 resetEncoder();
+			 //Turn 90 left
+			 PulseWidth = 0;
 			 while (PulseWidth<calculateUnitsAuto(264))
 			 {
 				 moveAutoForward();
 			 }
-			 turnNinetyLeft();
-			 resetEncoder();
+			 //Turn 90 left
 			 shootCubeAuto();
 		  }
-		}
-	}
-*/
+
 	void AutonomousInit() override {
-		intake1 -> Set(DoubleSolenoid::Value::kForward);
-		intake2 -> Set(DoubleSolenoid::Value::kForward);
-
+		gameData = DriverStation::GetInstance().GetGameSpecificMessage();
+		if(gameData.length() > 2)
+		{
+			if(gameData[0] == 'L') //switch the L to R if we start on the right
+			{
+				colorIsInFrontOfUsAuto();
+			}
+			else
+			{
+				//run leftOtherTeamHasAuto() or leftIfOtherTeamNoAuto()
+			}
+		//intake1 -> Set(DoubleSolenoid::Value::kForward);
+		//intake2 -> Set(DoubleSolenoid::Value::kForward);
+		}
 	}
 
 	void AutonomousPeriodic() {
 		PulseWidth = frontRightSpeedController->GetSensorCollection().GetPulseWidthVelocity();
-		double gyroCount = gyro -> GetAngle();
 		myData->PutNumber("Pulse Width Counter", PulseWidth);
-		myData->PutNumber("Gyro Counter", PulseWidth);
 	}
 
-	void TeleopInit() {}
+	void TeleopInit() {
+		pigeon->SetAccumZAngle(0,10);
+
+	}
 
 	void TeleopPeriodic() {
 		torqueMode();
 		speedMode();
 		mechIntakeOuttake();
 		moveRobotTeleop();
+		pigeon->GetAccumGyro(gyroValues);
+		myData->PutNumber("Gyro z", gyroValues[2]);
+
 	}
 
 	void TestPeriodic() {}
