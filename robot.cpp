@@ -119,6 +119,7 @@ public:
 		}
 		Wait(1);
 		pigeon->SetAccumZAngle(0,10);
+		frontRightSpeedController->GetSensorCollection().SetQuadraturePosition(0,10);
 
 	}
 	void turnNinetyRight() //right wheels go forward, left wheels go back
@@ -131,19 +132,19 @@ public:
 		}
 		Wait(1);
 		pigeon->SetAccumZAngle(0,10);
+		frontRightSpeedController->GetSensorCollection().SetQuadraturePosition(0,10);
+
 	}
 
 	void rightIfOtherTeamNoAuto() { //not going straight, starting on the right going to the left
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the left
-		//Reset PulseWidth
+		turnNinetyLeft();
 		while (PulseWidth < calculateUnitsAuto(120)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the right
-		//Reset PulseWidth
+		turnNinetyRight();
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
@@ -154,13 +155,11 @@ public:
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the right
-		//Reset PulseWidth
+		turnNinetyRight();
 		while (PulseWidth < calculateUnitsAuto(120)) {
 			moveAutoForward();
 		}
-		//Turn 90 degrees to the left
-		//Reset PulseWidth
+		turnNinetyLeft();
 		while (PulseWidth < calculateUnitsAuto(60)) {
 			moveAutoForward();
 		}
@@ -172,25 +171,22 @@ public:
 		 {
 			 moveAutoForward();
 		 }
-		 //Turn 90 left
-		 PulseWidth = 0;
+		 turnNinetyLeft();
 		 while (PulseWidth < calculateUnitsAuto(65))
 		 {
 			 moveAutoForward();
 		 }
-		 //Turn 90 right
-		 PulseWidth=0;
+		 turnNinetyRight();
 		 while (PulseWidth <calculateUnitsAuto(110))
 		 {
 			 moveAutoForward();
 		 }
-		 //Turn 90 right
-		 PulseWidth = 0;
+		 turnNinetyRight();
 		 while (PulseWidth<calculateUnitsAuto(264))
 		 {
 			 moveAutoForward();
 		 }
-		 //Turn 90 right
+		 turnNinetyLeft();
 		 shootCubeAuto();
  	 }
 
@@ -201,25 +197,22 @@ public:
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 right
-			 PulseWidth = 0;
+			 turnNinetyRight();
 			 while (PulseWidth < calculateUnitsAuto(65))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 left
-			 PulseWidth=0;
+			 turnNinetyLeft();
 			 while (PulseWidth <calculateUnitsAuto(110))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 left
-			 PulseWidth = 0;
+			 turnNinetyLeft();
 			 while (PulseWidth<calculateUnitsAuto(264))
 			 {
 				 moveAutoForward();
 			 }
-			 //Turn 90 left
+			 turnNinetyLeft();
 			 shootCubeAuto();
 		  }
 
