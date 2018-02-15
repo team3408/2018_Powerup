@@ -111,11 +111,13 @@ public:
 	}
 	void turnNinetyLeft() //right wheels go forward, left wheels go back
 	{
-		while(gyroValues[2] != -90) {
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, 1);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, 1);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, -1);
-		backRightSpeedController->Set(ControlMode::PercentOutput, -1);
+		while(gyroValues[2] > -90) {
+		pigeon->GetAccumGyro(gyroValues);
+		myData->PutNumber("Gyro z", gyroValues[2]);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -.3);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -.3);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, -.3);
+		backRightSpeedController->Set(ControlMode::PercentOutput, -.3);
 		}
 		Wait(1);
 		pigeon->SetAccumZAngle(0,10);
@@ -124,7 +126,9 @@ public:
 	}
 	void turnNinetyRight() //right wheels go forward, left wheels go back
 	{
-		while(gyroValues[2] != 90) {
+		while(gyroValues[2] < 90) {
+		pigeon->GetAccumGyro(gyroValues);
+		myData->PutNumber("Gyro z", gyroValues[2]);
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, -1);
 		backLeftSpeedController->Set(ControlMode::PercentOutput, -1);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, 1);
