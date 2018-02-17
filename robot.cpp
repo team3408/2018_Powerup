@@ -20,7 +20,7 @@ using namespace std;
 class Robot : public frc::IterativeRobot {
 public:
 
-	TalonSRX *frontLeftSpeedController, *backLeftSpeedController, *frontRightSpeedController, *backRightSpeedController, *leftIntakeSpeedController, *rightIntakeSpeedController, *centerToteTunnel, *leftToteTunnel, *rightToteTunnel;
+	TalonSRX *frontLeftSpeedController, *backLeftSpeedController, *frontRightSpeedController, *backRightSpeedController, *leftIntakeSpeedController, *rightIntakeSpeedController, *centerToteTunnel, *leftToteTunnel, *rightToteTunnel, *climberBackUpSpeedController;
 	Joystick *myStick;
 	SmartDashboard *myData;
 	DoubleSolenoid *gearBoxShifter;
@@ -44,6 +44,7 @@ public:
 		centerToteTunnel = new TalonSRX(6);
 		rightToteTunnel = new TalonSRX(7);
 		leftToteTunnel = new TalonSRX(8);
+		climberBackUpSpeedController = new TalonSRX(21);
 		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 		gearBoxShifter = new DoubleSolenoid(0,1);
 		pigeon = new PigeonIMU(frontLeftSpeedController);
