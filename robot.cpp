@@ -47,7 +47,7 @@ public:
 		climberBackUpSpeedController = new TalonSRX(21);
 		leftIntakeSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 		gearBoxShifter = new DoubleSolenoid(0,1);
-		pigeon = new PigeonIMU(frontLeftSpeedController);
+		pigeon = new PigeonIMU(rightToteTunnel);
 		//intake1 = new DoubleSolenoid(3,4);
 		//intake2 = new DoubleSolenoid(5,6);
 	//	intake1 -> Set(DoubleSolenoid::Value::kReverse);
