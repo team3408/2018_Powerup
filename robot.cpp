@@ -35,10 +35,10 @@ public:
 	double gyroValues[3];
 	void RobotInit() {
 		myStick = new Joystick(0);
-		frontLeftSpeedController = new TalonSRX(2);
+		frontLeftSpeedController = new TalonSRX(0);
 		frontRightSpeedController = new TalonSRX(1);
-		backLeftSpeedController = new TalonSRX(0);
-		backRightSpeedController = new TalonSRX(3);
+		backLeftSpeedController = new TalonSRX(3);
+		backRightSpeedController = new TalonSRX(2);
 		leftIntakeSpeedController = new TalonSRX(4);
 		rightIntakeSpeedController = new TalonSRX(5);
 		centerToteTunnel = new TalonSRX(6);
@@ -46,11 +46,19 @@ public:
 		leftToteTunnel = new TalonSRX(8);
 		frontRightSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 		gearBoxShifter = new DoubleSolenoid(0,1);
-		pigeon = new PigeonIMU(frontRightSpeedController);
+		pigeon = new PigeonIMU(frontLeftSpeedController);
 		//intake1 = new DoubleSolenoid(3,4);
 		//intake2 = new DoubleSolenoid(5,6);
 	//	intake1 -> Set(DoubleSolenoid::Value::kReverse);
 	//	intake2 -> Set(DoubleSolenoid::Value::kReverse);
+
+
+
+		bool CanRobotLove = false;
+
+
+
+
 	}
 
 	void torqueMode() {
@@ -86,8 +94,8 @@ public:
 		double rightWheels = myStick->GetRawAxis(1);
 		frontLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
 		backLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
-		backRightSpeedController->Set(ControlMode::PercentOutput, rightWheels);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, -rightWheels);
+		backRightSpeedController->Set(ControlMode::PercentOutput, -rightWheels);
 	}
 	void moveAutoForward()
 	{
@@ -151,6 +159,20 @@ public:
 			moveAutoForward();
 		}
 		shootCubeAuto();
+	}
+
+	void toteTunnelIn() {
+		if (myStick -> GetRawButton(3)) {
+			leftToteTunnel -> Set(ControlMode::PercentOutput,0.5);
+			rightToteTunnel -> Set(ControlMode::PercentOutput,0.5);
+		}
+	}
+
+	void toteTunnelOut() {
+		if (myStick -> GetRawButton(4)) {
+			leftToteTunnel -> Set(ControlMode::PercentOutput,-0.5);
+			rightToteTunnel -> Set(ControlMode::PercentOutput,-0.5);
+		}
 	}
 
 	void leftIfOtherTeamNoAuto() { //not going straight, starting on the left going to the right
@@ -250,8 +272,21 @@ public:
 		speedMode();
 		mechIntakeOuttake();
 		moveRobotTeleop();
+		toteTunnelIn();
+		toteTunnelOut();
 		pigeon->GetAccumGyro(gyroValues);
 		myData->PutNumber("Gyro z", gyroValues[2]);
+		myData->PutNumber("Gyro x", gyroValues[0]);
+		myData->PutNumber("Gyro y", gyroValues[1]);
+
+		bool buttontester = myStick->GetRawButton(1);
+		if(buttontester)
+		{
+			turnNinetyLeft();
+
+		}
+		pigeon->SetAccumZAngle(0,10);
+
 
 	}
 
