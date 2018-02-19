@@ -41,10 +41,10 @@ public:
 		backRightSpeedController = new TalonSRX(2);
 		leftIntakeSpeedController = new TalonSRX(4);
 		rightIntakeSpeedController = new TalonSRX(5);
-		centerToteTunnel = new TalonSRX(6);
+		centerToteTunnel = new TalonSRX(21);
 		rightToteTunnel = new TalonSRX(7);
 		leftToteTunnel = new TalonSRX(8);
-		climberBackUpSpeedController = new TalonSRX(21);
+		//climberBackUpSpeedController = new TalonSRX(21);
 		leftIntakeSpeedController->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
 		gearBoxShifter = new DoubleSolenoid(0,1);
 		pigeon = new PigeonIMU(rightToteTunnel);
@@ -52,12 +52,6 @@ public:
 		//intake2 = new DoubleSolenoid(5,6);
 	//	intake1 -> Set(DoubleSolenoid::Value::kReverse);
 	//	intake2 -> Set(DoubleSolenoid::Value::kReverse);
-
-
-
-		bool CanRobotLove = false;
-
-
 
 
 	}
@@ -69,13 +63,27 @@ public:
 		}
 	}
 
+
 	void mechIntakeOuttake() {
-		double mechValue = myStick->GetRawAxis(3);
-		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue*mechValue));
-		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue*mechValue));
-		centerToteTunnel->Set(ControlMode::PercentOutput, (mechValue*mechValue));
-		leftToteTunnel->Set(ControlMode::PercentOutput, (mechValue*mechValue));
-		rightToteTunnel->Set(ControlMode::PercentOutput, (mechValue*mechValue));
+
+		double mechValue = myStick->GetRawAxis(2);
+		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue));
+		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue));
+		centerToteTunnel->Set(ControlMode::PercentOutput, (mechValue));
+		leftToteTunnel->Set(ControlMode::PercentOutput, (-mechValue));
+		rightToteTunnel->Set(ControlMode::PercentOutput, (mechValue));
+
+		double mechValue1 = myStick->GetRawAxis(3);
+				leftIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1));
+				rightIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1));
+				centerToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1));
+				leftToteTunnel->Set(ControlMode::PercentOutput, (mechValue1));
+				rightToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1));
+	}
+
+
+	void mechIntake() {
+
 	}
 
 	void speedMode() {
@@ -91,10 +99,10 @@ public:
 		return units;
 	}
 	void moveRobotTeleop() {
-		double leftWheels = myStick->GetRawAxis(5);
-		double rightWheels = myStick->GetRawAxis(1);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, -leftWheels);
+		double leftWheels = myStick->GetRawAxis(1);
+		double rightWheels = myStick->GetRawAxis(5);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
 		frontRightSpeedController->Set(ControlMode::PercentOutput, -rightWheels);
 		backRightSpeedController->Set(ControlMode::PercentOutput, -rightWheels);
 	}
@@ -161,23 +169,28 @@ public:
 		}
 		shootCubeAuto();
 	}
-/*
+
 	void toteTunnelIn() {
-		if (myStick -> GetRawButton(3)) {
-			leftToteTunnel -> Set(ControlMode::PercentOutput,0.5);
-			rightToteTunnel -> Set(ControlMode::PercentOutput,0.5);
-			centerToteTunnel->Set(ControlMode::PercentOutput,0.5);
+		while (myStick -> GetRawButton(3)) {
+			leftToteTunnel -> Set(ControlMode::PercentOutput,-0.2);
+			rightToteTunnel -> Set(ControlMode::PercentOutput,0.2);
+			centerToteTunnel->Set(ControlMode::PercentOutput,0.2);
+			leftIntakeSpeedController->Set(ControlMode::PercentOutput, 0.2);
+			rightIntakeSpeedController->Set(ControlMode::PercentOutput, 0.2);
 		}
 	}
 
 	void toteTunnelOut() {
-		if (myStick -> GetRawButton(4)) {
-			leftToteTunnel -> Set(ControlMode::PercentOutput,-0.5);
-			rightToteTunnel -> Set(ControlMode::PercentOutput,-0.5);
-			centerToteTunnel->Set(ControlMode::PercentOutput,-0.5);
+		while (myStick -> GetRawButton(4)) {
+			leftToteTunnel -> Set(ControlMode::PercentOutput,0.2);
+			rightToteTunnel -> Set(ControlMode::PercentOutput,-0.2);
+			centerToteTunnel->Set(ControlMode::PercentOutput,-0.2);
+			leftIntakeSpeedController->Set(ControlMode::PercentOutput, -0.2);
+			rightIntakeSpeedController->Set(ControlMode::PercentOutput, -0.2);
+
 
 		}
-	} */
+	}
 
 	void leftIfOtherTeamNoAuto() { //not going straight, starting on the left going to the right
 		while (PulseWidth < calculateUnitsAuto(60)) {
@@ -274,7 +287,36 @@ public:
 	void TeleopPeriodic() {
 		torqueMode();
 		speedMode();
-		mechIntakeOuttake();
+		//mechIntakeOuttake();
+		double mechValue = myStick->GetRawAxis(2);
+		double mechValue1 = myStick->GetRawAxis(3);
+
+		if (mechValue > 0) {
+		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue));
+		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue));
+		centerToteTunnel->Set(ControlMode::PercentOutput, (mechValue));
+		leftToteTunnel->Set(ControlMode::PercentOutput, (-mechValue));
+		rightToteTunnel->Set(ControlMode::PercentOutput, (mechValue));
+		}
+
+		else {
+			leftIntakeSpeedController->Set(ControlMode::PercentOutput, (0));
+			rightIntakeSpeedController->Set(ControlMode::PercentOutput, (0));
+			centerToteTunnel->Set(ControlMode::PercentOutput, (0));
+			leftToteTunnel->Set(ControlMode::PercentOutput, (0));
+			rightToteTunnel->Set(ControlMode::PercentOutput, (0));
+		}
+		if (mechValue1 > 0) {
+		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1));
+		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1));
+		centerToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1));
+		leftToteTunnel->Set(ControlMode::PercentOutput, (mechValue1));
+		rightToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1));
+		mechValue1 = myStick->GetRawAxis(3);
+		}
+
+		//toteTunnelIn();
+		//toteTunnelOut();
 		moveRobotTeleop();
 		pigeon->GetAccumGyro(gyroValues);
 		myData->PutNumber("Gyro z", gyroValues[2]);
