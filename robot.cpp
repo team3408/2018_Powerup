@@ -166,6 +166,7 @@ public:
 		if (myStick -> GetRawButton(3)) {
 			leftToteTunnel -> Set(ControlMode::PercentOutput,0.5);
 			rightToteTunnel -> Set(ControlMode::PercentOutput,0.5);
+			centerToteTunnel->Set(ControlMode::PercentOutput,0.5);
 		}
 	}
 
@@ -173,6 +174,8 @@ public:
 		if (myStick -> GetRawButton(4)) {
 			leftToteTunnel -> Set(ControlMode::PercentOutput,-0.5);
 			rightToteTunnel -> Set(ControlMode::PercentOutput,-0.5);
+			centerToteTunnel->Set(ControlMode::PercentOutput,-0.5);
+
 		}
 	}
 
@@ -279,7 +282,7 @@ public:
 		myData->PutNumber("Gyro z", gyroValues[2]);
 		myData->PutNumber("Gyro x", gyroValues[0]);
 		myData->PutNumber("Gyro y", gyroValues[1]);
-
+/*
 		bool buttontester = myStick->GetRawButton(1);
 		if(buttontester)
 		{
@@ -288,7 +291,7 @@ public:
 		}
 		pigeon->SetAccumZAngle(0,10);
 
-
+*/
 	}
 
 	void TestPeriodic() {}
