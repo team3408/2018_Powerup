@@ -71,11 +71,11 @@ public:
 
 	void mechIntakeOuttake() {
 		double mechValue = myStick->GetRawAxis(3);
-		leftIntakeSpeedController->Set(ControlMode::PercentOutput, mechValue);
-		rightIntakeSpeedController->Set(ControlMode::PercentOutput, mechValue);
-		centerToteTunnel->Set(ControlMode::PercentOutput, mechValue);
-		leftToteTunnel->Set(ControlMode::PercentOutput, mechValue);
-		rightToteTunnel->Set(ControlMode::PercentOutput, mechValue);
+		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue*mechValue));
+		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue*mechValue));
+		centerToteTunnel->Set(ControlMode::PercentOutput, (mechValue*mechValue));
+		leftToteTunnel->Set(ControlMode::PercentOutput, (mechValue*mechValue));
+		rightToteTunnel->Set(ControlMode::PercentOutput, (mechValue*mechValue));
 	}
 
 	void speedMode() {
@@ -161,7 +161,7 @@ public:
 		}
 		shootCubeAuto();
 	}
-
+/*
 	void toteTunnelIn() {
 		if (myStick -> GetRawButton(3)) {
 			leftToteTunnel -> Set(ControlMode::PercentOutput,0.5);
@@ -177,7 +177,7 @@ public:
 			centerToteTunnel->Set(ControlMode::PercentOutput,-0.5);
 
 		}
-	}
+	} */
 
 	void leftIfOtherTeamNoAuto() { //not going straight, starting on the left going to the right
 		while (PulseWidth < calculateUnitsAuto(60)) {
@@ -276,8 +276,6 @@ public:
 		speedMode();
 		mechIntakeOuttake();
 		moveRobotTeleop();
-		toteTunnelIn();
-		toteTunnelOut();
 		pigeon->GetAccumGyro(gyroValues);
 		myData->PutNumber("Gyro z", gyroValues[2]);
 		myData->PutNumber("Gyro x", gyroValues[0]);
