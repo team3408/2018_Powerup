@@ -101,10 +101,25 @@ public:
 	void moveRobotTeleop() {
 		double leftWheels = myStick->GetRawAxis(1);
 		double rightWheels = myStick->GetRawAxis(5);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, -rightWheels);
-		backRightSpeedController->Set(ControlMode::PercentOutput, -rightWheels);
+		if(leftWheels < 0) {
+			frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels*leftWheels*(-1));
+			backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels*leftWheels*(-1));
+		}
+
+		else {
+			frontLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels* leftWheels);
+			backLeftSpeedController->Set(ControlMode::PercentOutput, leftWheels*leftWheels);
+		}
+
+		if(rightWheels < 0) {
+			frontRightSpeedController->Set(ControlMode::PercentOutput, (rightWheels)*(rightWheels));
+			backRightSpeedController->Set(ControlMode::PercentOutput, (rightWheels)*(rightWheels));
+		}
+
+		else {
+			frontRightSpeedController->Set(ControlMode::PercentOutput, (-rightWheels)*(rightWheels));
+			backRightSpeedController->Set(ControlMode::PercentOutput, (-rightWheels)*(rightWheels));
+		}
 	}
 	void moveAutoForward()
 	{
@@ -292,11 +307,11 @@ public:
 		double mechValue1 = myStick->GetRawAxis(3);
 
 		if (mechValue > 0) {
-		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue));
-		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue));
-		centerToteTunnel->Set(ControlMode::PercentOutput, (mechValue));
-		leftToteTunnel->Set(ControlMode::PercentOutput, (-mechValue));
-		rightToteTunnel->Set(ControlMode::PercentOutput, (mechValue));
+		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue*mechValue));
+		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (mechValue*mechValue));
+		centerToteTunnel->Set(ControlMode::PercentOutput, (-mechValue*mechValue));
+		leftToteTunnel->Set(ControlMode::PercentOutput, (-mechValue*mechValue));
+		rightToteTunnel->Set(ControlMode::PercentOutput, (mechValue*mechValue));
 		}
 
 		else {
@@ -307,11 +322,11 @@ public:
 			rightToteTunnel->Set(ControlMode::PercentOutput, (0));
 		}
 		if (mechValue1 > 0) {
-		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1));
-		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1));
-		centerToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1));
-		leftToteTunnel->Set(ControlMode::PercentOutput, (mechValue1));
-		rightToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1));
+		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
+		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
+		centerToteTunnel->Set(ControlMode::PercentOutput, (mechValue1*mechValue1));
+		leftToteTunnel->Set(ControlMode::PercentOutput, (mechValue1*mechValue1));
+		rightToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
 		mechValue1 = myStick->GetRawAxis(3);
 		}
 
