@@ -55,6 +55,8 @@ public:
 
 		pigeon = new PigeonIMU(rightToteTunnel);
 		myTimer = new Timer();
+		rightIntakeSpeedController -> SetInverted(true);
+		leftIntakeSpeedController -> SetInverted(true);
 		//intake1 = new DoubleSolenoid(3,4);
 		//intake2 = new DoubleSolenoid(5,6);
 	//	intake1 -> Set(DoubleSolenoid::Value::kReverse);
@@ -138,15 +140,15 @@ public:
 	}
 	void moveAutoForward()
 	{
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, -0.1);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, -0.1);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.1);
-		backRightSpeedController->Set(ControlMode::PercentOutput, 0.1);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -0.5);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -0.5);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
+		backRightSpeedController->Set(ControlMode::PercentOutput, 0.5);
 	}
 	void shootCubeAuto() {
-			centerToteTunnel->Set(ControlMode::PercentOutput, -0.75);
-			rightToteTunnel->Set(ControlMode::PercentOutput, 0.75);
-			leftToteTunnel->Set(ControlMode::PercentOutput, -0.75);
+			centerToteTunnel->Set(ControlMode::PercentOutput, -1);
+			rightToteTunnel->Set(ControlMode::PercentOutput, 1);
+			leftToteTunnel->Set(ControlMode::PercentOutput, -1);
 		}
 	void colorIsInFrontOfUsAuto() {
 		  while (PulseWidth < unitsToSwitch)
@@ -159,13 +161,13 @@ public:
 
 	void turnNinetyLeft() //right wheels go forward, left wheels go back
 	{
-		while(gyroValues[2] > -90) {
+		while(gyroValues[2] > -66) {
 		pigeon->GetAccumGyro(gyroValues);
 		myData->PutNumber("Gyro z", gyroValues[2]);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, -.3);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, -.3);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, -.3);
-		backRightSpeedController->Set(ControlMode::PercentOutput, -.3);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, -.75);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, -.75);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, -.75);
+		backRightSpeedController->Set(ControlMode::PercentOutput, -.75);
 		}
 		pigeon->SetAccumZAngle(0,10);
 		//frontRightSpeedController->GetSensorCollection().SetQuadraturePosition(0,10);
@@ -173,13 +175,13 @@ public:
 	}
 	void turnNinetyRight() //right wheels go forward, left wheels go back
 	{
-		while(gyroValues[2] < 90) {
+		while(gyroValues[2] < 66) {
 		pigeon->GetAccumGyro(gyroValues);
 		myData->PutNumber("Gyro z", gyroValues[2]);
-		frontLeftSpeedController->Set(ControlMode::PercentOutput, -1);
-		backLeftSpeedController->Set(ControlMode::PercentOutput, -1);
-		frontRightSpeedController->Set(ControlMode::PercentOutput, 1);
-		backRightSpeedController->Set(ControlMode::PercentOutput, 1);
+		frontLeftSpeedController->Set(ControlMode::PercentOutput, 0.75);
+		backLeftSpeedController->Set(ControlMode::PercentOutput, 0.75);
+		frontRightSpeedController->Set(ControlMode::PercentOutput, 0.75);
+		backRightSpeedController->Set(ControlMode::PercentOutput, 0.75);
 		}
 		pigeon->SetAccumZAngle(0,10);
 		//frontRightSpeedController->GetSensorCollection().SetQuadraturePosition(0,10);
@@ -239,19 +241,21 @@ public:
 	}
 
 	void testingAuto() { //not going straight, starting on the left going to the right
-			while (myTimer->Get() < 3.0) {
+			while (myTimer->Get() < 1.2) {
 				moveAutoForward();
 			}
 			turnNinetyRight();
+			Wait(1);
 			myTimer->Reset();
 			myTimer->Start();
-			while (myTimer->Get() < 4.0) {
+			while (myTimer->Get() < 1.0) {
 				moveAutoForward();
 			}
 			turnNinetyLeft();
+			Wait(1);
 			myTimer->Reset();
 			myTimer->Start();
-			while (myTimer->Get() < 4.0) {
+			while (myTimer->Get() < 1.0) {
 				moveAutoForward();
 			}
 			shootCubeAuto();
@@ -371,7 +375,7 @@ public:
 		myData->PutNumber("Gyro x", gyroValues[0]);
 		myData->PutNumber("Gyro y", gyroValues[1]);
 
-		/*
+
 		bool buttontester = myStick->GetRawButton(1);
 		if(buttontester)
 		{
@@ -380,7 +384,7 @@ public:
 		}
 		pigeon->SetAccumZAngle(0,10);
 
-*/
+
 	}
 
 	void TestPeriodic() {}
