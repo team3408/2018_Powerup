@@ -342,12 +342,17 @@ public:
 			rightToteTunnel->Set(ControlMode::PercentOutput, (0));
 		}
 		if (mechValue1 > 0) {
-		leftIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
-		rightIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
+		//leftIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
+		//rightIntakeSpeedController->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
 		centerToteTunnel->Set(ControlMode::PercentOutput, (mechValue1*mechValue1));
 		leftToteTunnel->Set(ControlMode::PercentOutput, (mechValue1*mechValue1));
 		rightToteTunnel->Set(ControlMode::PercentOutput, (-mechValue1*mechValue1));
 		mechValue1 = myStick->GetRawAxis(3);
+		}
+		bool intakeButton = myStick->GetRawButton(6);
+		while(intakeButton) {
+			leftIntakeSpeedController->Set(ControlMode::PercentOutput, (-0.8));
+			rightIntakeSpeedController->Set(ControlMode::PercentOutput, (-0.8));
 		}
 
 		//toteTunnelIn();
